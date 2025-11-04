@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 🔹 Internet diperlukan untuk Firebase Auth & Google Sign-In -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- (Opsional, kalau pakai notifikasi Firebase Cloud Messaging) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="FomoFocus"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.FomoFocus">
+
+        <!-- 🔹 Activity untuk Profile -->
+        <activity
+            android:name=".ActivityProfile"
+            android:exported="false" />
+
+        <!-- 🔹 Activity utama saat aplikasi dibuka -->
+        <activity
+            android:name=".StartActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- 🔹 Activity login -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true" />
+
+        <!-- 🔹 Dashboard utama -->
+        <activity
+            android:name=".DashboardActivity"
+            android:exported="false" />
+
+        <!-- 🔹 Halaman signup -->
+        <activity
+            android:name=".SignupActivity"
+            android:exported="false" />
+
+        <!-- 🔹 Tambahkan ini agar Google Sign-In bisa jalan -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+    </application>
+
+</manifest>

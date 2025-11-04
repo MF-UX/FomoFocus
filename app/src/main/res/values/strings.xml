@@ -1,0 +1,19 @@
+<resources>
+
+    <string name="app_name">FomoFocus</string>
+    <string name="username_or_email">Username or Email</string>
+    <string name="welcome_nback">Welcome\nBack</string>
+    <string name="don_t_have_an_account">Don\'t have an account?</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_in">Sign In</string>
+    <string name="back_button">tombol kembali</string>
+    <string name="menu_button">tombol menu</string>
+    <string name="pengaturan">Pengaturan</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="hapus_akun">Hapus Akun</string>
+    <string name="setting">Setting</string>
+    <string name="social_login">or sign in with</string>
+    <string name="default_web_client_id">907730237145-ucc34sdq9cl39puf8n9n2ol85bf8qahq.apps.googleusercontent.com</string>
+
+</resources>
+

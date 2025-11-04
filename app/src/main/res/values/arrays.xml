@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="duration_options">
+        <item>30 menit</item>
+        <item>15 menit</item>
+        <item>1 menit</item>
+    </string-array>
+
+    <integer-array name="duration_values">
+        <item>30</item>
+        <item>15</item>
+        <item>1</item>
+    </integer-array>
+</resources>

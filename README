@@ -1,0 +1,60 @@
+Aplikasi : Fomo Focus
+
+---------===---------
+Deskripsi Aplikasi – FomoFocus
+  FomoFocus adalah aplikasi yang dirancang untuk membantu pengguna belajar dengan lebih fokus dan
+konsisten menggunakan sistem timer. Melalui metode pengaturan waktu belajar dan istirahat,
+aplikasi ini membantu menciptakan kebiasaan belajar yang disiplin dan produktif.
+
+Dengan FomoFocus, pengguna dapat:
+1. Mengatur durasi waktu belajar sesuai kebutuhan.
+2. Mendapat notifikasi saat waktu belajar atau istirahat berakhir.
+3. Menjaga konsistensi belajar tanpa mudah terdistraksi.
+Tujuan utama FomoFocus adalah membangun rutinitas belajar yang efektif agar pengguna dapat mencapai
+hasil yang maksimal dalam kegiatan belajar sehari-hari.
+
+---Fitur Utama---
+1. Timer Belajar (Focus Timer)
+Pengguna dapat mengatur durasi waktu belajar sesuai kebutuhan. Saat timer berjalan,
+pengguna difokuskan untuk belajar tanpa gangguan.
+2. Timer Istirahat (Break Timer)
+Setelah waktu belajar selesai, aplikasi memberikan waktu istirahat untuk mencegah kelelahan dan
+menjaga keseimbangan.
+3. Notifikasi Otomatis
+Sistem akan mengirimkan notifikasi atau suara pengingat saat waktu belajar maupun istirahat
+telah berakhir.
+4. Antarmuka Sederhana dan Menarik
+Desain aplikasi dibuat minimalis dan nyaman dipandang, agar pengguna bisa fokus tanpa
+terganggu oleh elemen visual berlebihan.
+
+---Teknologi yang Digunakan---
+Bahasa Pemrograman: Kotlin / Java
+IDE: Android Studio
+Minimum SDK: 23+ (Android 6.0 Marshmallow)
+Library Utama:
+Glide → Digunakan untuk memuat dan menampilkan gambar secara efisien di aplikasi.
+Firebase → Digunakan sebagai database untuk menyimpan dan mengelola data pengguna secara real-time.
+
+---Cara Menjalankan Proyek---
+1. Clone repositori ini
+ unduh repository melalui GITHUB atau extrat file ZIP proyek ke dalam folder lokal.
+   "git clone https://github.com/MF-UX/FomoFocus.git"
+
+2. Buka di Android Studio
+ Jalankan Android Studio.
+ Pilih “Open an existing project” dan arahkan ke folder proyek FomoFocus.
+ Tunggu hingga proses sinkronisasi Gradle selesai.
+
+3. Konfigurasi Firebase
+   1. Masuk ke Firebase Console
+   2. Tambahkan proyek baru atau hubungkan proyek yang sudah ada.
+   3. Unduh file google-services.json dan letakkan di folder: app/
+
+3. Jalankan Aplikasi
+ Hubungkan perangkat Android atau gunakan Android Emulator.
+ Klik tombol Run ▶️ di Android Studio.
+ Tunggu hingga aplikasi berhasil diinstal dan berjalan di perangkat.
+
+
+
+
