@@ -8,6 +8,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
+import com.android.volley.Request
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.example.fomofocus.databinding.ActivityMainBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -15,6 +18,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
 
@@ -40,65 +44,99 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
-        // 🔹 Tombol Sign In manual
+        // 🔹 Tombol login manual (XAMPP)
         binding.btnSignIn.setOnClickListener {
-            val emailOrUsername = binding.etEmail.text.toString().trim()
+            val loginInput = binding.etEmail.text.toString().trim()
             val password = binding.etPassword.text.toString().trim()
 
-            val sharedPref = getSharedPreferences("UserData", MODE_PRIVATE)
-            val savedEmail = sharedPref.getString("email", null)
-            val savedUsername = sharedPref.getString("username", null)
-            val savedPassword = sharedPref.getString("password", null)
-
-            if (savedEmail == null || savedPassword == null) {
-                Toast.makeText(this, "Belum ada akun. Silakan daftar dulu.", Toast.LENGTH_SHORT).show()
-            } else if ((emailOrUsername == savedEmail || emailOrUsername == savedUsername) && password == savedPassword) {
-                sharedPref.edit { putBoolean("isLoggedIn", true) }
-                Log.d("USER_DATA", "User login berhasil -> $savedUsername ($savedEmail)")
-                startActivity(Intent(this, DashboardActivity::class.java))
-                finish()
-            } else {
-                Toast.makeText(this, "Akun tidak ditemukan!", Toast.LENGTH_SHORT).show()
+            if (loginInput.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Isi semua data!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
+
+            val url = "http://192.168.1.10/Database/login.php"
+
+            val request = object : StringRequest(
+                Request.Method.POST, url,
+                { response ->
+                    try {
+                        val json = JSONObject(response)
+                        val success = json.getBoolean("success")
+                        val message = json.getString("message")
+
+                        if (success) {
+                            val username = json.optString("username")
+                            val gmail = json.optString("gmail")
+                            val passwordUser = json.optString("password")
+
+                            val sharedPref = getSharedPreferences("UserData", MODE_PRIVATE)
+                            sharedPref.edit {
+                                putString("username", username)
+                                putString("email", gmail)
+                                putString("password", passwordUser)
+                                putBoolean("isLoggedIn", true)
+                            }
+
+                            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                            startActivity(Intent(this, DashboardActivity::class.java))
+                            finish()
+                        } else {
+                            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                        }
+                    } catch (e: Exception) {
+                        Toast.makeText(this, "Kesalahan parsing data: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                { error ->
+                    Toast.makeText(this, "Koneksi gagal: ${error.message}", Toast.LENGTH_SHORT).show()
+                }
+            ) {
+                override fun getParams(): MutableMap<String, String> {
+                    val params = HashMap<String, String>()
+                    params["loginInput"] = loginInput
+                    params["password"] = password
+                    return params
+                }
+            }
+
+            Volley.newRequestQueue(this).add(request)
         }
+
 
         // 🔹 Tombol daftar
         binding.tvSignup.setOnClickListener {
             startActivity(Intent(this, SignupActivity::class.java))
         }
 
-        // ==================================================
-        //           🔹 Tombol Lupa Password (Firebase)
-        // ==================================================
+        // 🔹 Tombol lupa password (Firebase)
         binding.tvForgetPassword.setOnClickListener {
-            val builder = AlertDialog.Builder(this)
-            builder.setTitle("Reset Password")
-
             val input = android.widget.EditText(this)
             input.hint = "Masukkan email kamu"
-            builder.setView(input)
 
-            builder.setPositiveButton("Kirim") { _, _ ->
-                val email = input.text.toString().trim()
-                if (email.isEmpty()) {
-                    Toast.makeText(this, "Email tidak boleh kosong", Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
+            AlertDialog.Builder(this)
+                .setTitle("Reset Password")
+                .setView(input)
+                .setPositiveButton("Kirim") { _, _ ->
+                    val email = input.text.toString().trim()
+                    if (email.isEmpty()) {
+                        Toast.makeText(this, "Email tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                        return@setPositiveButton
+                    }
+
+                    firebaseAuth.sendPasswordResetEmail(email)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Link reset dikirim ke $email", Toast.LENGTH_LONG).show()
+                        }
+                        .addOnFailureListener { e ->
+                            Toast.makeText(this, "Gagal: ${e.message}", Toast.LENGTH_SHORT).show()
+                            Log.e("RESET_PASSWORD", "Error: ${e.message}")
+                        }
                 }
-
-                firebaseAuth.sendPasswordResetEmail(email)
-                    .addOnSuccessListener {
-                        Toast.makeText(this, "Link reset password sudah dikirim ke $email", Toast.LENGTH_LONG).show()
-                    }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(this, "Gagal mengirim email: ${e.message}", Toast.LENGTH_SHORT).show()
-                        Log.e("RESET_PASSWORD", "Error: ${e.message}")
-                    }
-            }
-            builder.setNegativeButton("Batal", null)
-            builder.show()
+                .setNegativeButton("Batal", null)
+                .show()
         }
 
-        // 🔹 Tombol Login dengan Google
+        // 🔹 Tombol login Google
         binding.btnGoogle?.setOnClickListener {
             signInWithGoogle()
         }
@@ -137,12 +175,12 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Selamat datang, $name!", Toast.LENGTH_SHORT).show()
                     Log.d("GOOGLE_LOGIN", "Login sukses: $name ($email)")
 
-                    // Simpan ke SharedPreferences
                     val sharedPref = getSharedPreferences("UserData", MODE_PRIVATE)
                     sharedPref.edit {
                         putString("email", email)
                         putString("username", name)
-                        putString("photoUrl", photoUrl.toString())
+                        putString("photoUrl", photoUrl?.toString())
+                        putString("password", "")
                         putBoolean("isLoggedIn", true)
                     }
 

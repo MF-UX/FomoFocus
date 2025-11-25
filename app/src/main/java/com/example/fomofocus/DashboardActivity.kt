@@ -22,7 +22,8 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var btnStart: Button
     private lateinit var btnSwitchMode: Button
     private lateinit var tvMode: TextView
-    private lateinit var etDuration: EditText
+    private lateinit var spinnerDuration: Spinner
+    private lateinit var etLesson: EditText
     private lateinit var dashboardLayout: ConstraintLayout
     private lateinit var btnMenu: ImageButton
     private lateinit var alarmSound: MediaPlayer
@@ -41,12 +42,35 @@ class DashboardActivity : AppCompatActivity() {
         btnStart = findViewById(R.id.btnStart)
         btnSwitchMode = findViewById(R.id.btnSwitchMode)
         tvMode = findViewById(R.id.tvMode)
-        etDuration = findViewById(R.id.etDuration)
+        spinnerDuration = findViewById(R.id.spinnerDuration)
+        etLesson = findViewById(R.id.etDuration2)
         dashboardLayout = findViewById(R.id.dashboardLayout)
         btnMenu = findViewById(R.id.btn_menu)
 
         alarmSound = MediaPlayer.create(this, R.raw.alarm_sound)
         createNotificationChannel()
+
+        // ============================
+        // SPINNER MENIT FIX
+        // ============================
+        val adapter = ArrayAdapter.createFromResource(
+            this,
+            R.array.timer_minutes,
+            android.R.layout.simple_spinner_item
+        )
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerDuration.adapter = adapter
+
+        spinnerDuration.setSelection(2) // default 15 menit (index 2)
+
+        spinnerDuration.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: android.view.View?, position: Int, id: Long) {
+                selectedTimeInMinutes = parent.getItemAtPosition(position).toString().toInt()
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+
+        // ============================
 
         btnMenu.setOnClickListener { view ->
             val popup = PopupMenu(this, view)
@@ -55,6 +79,11 @@ class DashboardActivity : AppCompatActivity() {
                 when (item.itemId) {
                     R.id.settings -> {
                         startActivity(Intent(this, ActivityProfile::class.java))
+                        true
+                    }
+                    R.id.history -> {
+                        val intent = Intent(this, HistoryActivity::class.java)
+                        startActivity(intent)
                         true
                     }
                     R.id.action_signout -> {
@@ -78,14 +107,10 @@ class DashboardActivity : AppCompatActivity() {
 
         // Tombol Start / Stop
         btnStart.setOnClickListener {
-            val inputText = etDuration.text.toString().trim()
-            if (inputText.isNotEmpty()) {
-                selectedTimeInMinutes = try {
-                    inputText.toInt()
-                } catch (e: NumberFormatException) {
-                    25
-                }
-            }
+
+            // Simpan history
+            val lesson = etLesson.text.toString().trim()
+            saveHistory(selectedTimeInMinutes, lesson)
 
             if (!isRunning) {
                 startTimer(selectedTimeInMinutes * 60 * 1000L)
@@ -100,7 +125,6 @@ class DashboardActivity : AppCompatActivity() {
             updateModeUI()
         }
 
-        // Set tampilan awal
         updateModeUI()
     }
 
@@ -108,7 +132,6 @@ class DashboardActivity : AppCompatActivity() {
         isRunning = true
         btnStart.text = "STOP"
 
-        // Ubah background saat timer berjalan
         if (isBreakMode) {
             dashboardLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.green))
         } else {
@@ -117,14 +140,15 @@ class DashboardActivity : AppCompatActivity() {
 
         countDownTimer = object : CountDownTimer(timeInMillis, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                val minutes = millisUntilFinished / 1000 / 60
+                val hours = millisUntilFinished / 1000 / 3600
+                val minutes = (millisUntilFinished / 1000 / 60) % 60
                 val seconds = (millisUntilFinished / 1000) % 60
-                tvTimer.text = String.format("%02d:%02d", minutes, seconds)
+                tvTimer.text = String.format("%02d:%02d:%02d", hours, minutes, seconds)
             }
 
             override fun onFinish() {
                 isRunning = false
-                tvTimer.text = "00:00"
+                tvTimer.text = "00:00:00"
                 btnStart.text = "START"
                 dashboardLayout.setBackgroundColor(ContextCompat.getColor(this@DashboardActivity, R.color.white))
                 alarmSound.start()
@@ -133,6 +157,7 @@ class DashboardActivity : AppCompatActivity() {
                     "Waktu istirahat selesai, ayo fokus lagi!"
                 else
                     "Waktu habis, istirahat dulu!"
+
                 showNotification("FomoFocus", msg)
             }
         }.start()
@@ -142,8 +167,6 @@ class DashboardActivity : AppCompatActivity() {
         countDownTimer?.cancel()
         isRunning = false
         btnStart.text = "START"
-
-        // Reset background ke putih saat stop ditekan
         dashboardLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.white))
     }
 
@@ -159,6 +182,16 @@ class DashboardActivity : AppCompatActivity() {
             btnStart.setBackgroundColor(ContextCompat.getColor(this, R.color.red))
             btnStart.setTextColor(ContextCompat.getColor(this, R.color.white))
         }
+    }
+
+    private fun saveHistory(timeInMinutes: Int, lesson: String) {
+        val sharedPref = getSharedPreferences("FomoFocusHistory", MODE_PRIVATE)
+        val historySet = sharedPref.getStringSet("history", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
+
+        val timestamp = System.currentTimeMillis()
+        val record = "$timestamp|$timeInMinutes menit|Pelajaran: $lesson"
+        historySet.add(record)
+        sharedPref.edit().putStringSet("history", historySet).apply()
     }
 
     private fun showNotification(title: String, message: String) {

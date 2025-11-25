@@ -1,73 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/fomo_focus"
-    tools:context=".MainActivity">
+    tools:context=".SignupActivity">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintGuide_percent=".35" />
-
-    <ImageView
-        android:id="@+id/img_logo"
-        android:layout_width="294dp"
-        android:layout_height="190dp"
-        android:contentDescription="@string/app_name"
-        android:src="@drawable/fomofocusic"
-        app:layout_constraintBottom_toTopOf="@+id/textView2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintGuide_percent="0.23" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
         android:fontFamily="sans-serif-medium"
         android:text="Fomo Focus"
         android:textColor="@color/white"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.58" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-condensed-medium"
-        android:text="Sign Up"
-        android:textColor="#FAFAFA"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintVertical_bias="0.36" />
-
-    <TextView
-        android:id="@+id/textView7"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Jangan lupa daftar akun dulu ya bro"
-        android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toTopOf="@+id/guideline"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
@@ -81,121 +41,111 @@
             android:layout_height="match_parent"
             android:background="@color/white">
 
-            <TextView
-                android:id="@+id/textView8"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="18dp"
-                android:layout_marginTop="12dp"
-                android:fontFamily="sans-serif-medium"
-                android:text="Username :"
-                android:textColor="#000000"
+            <!-- 🔹 Foto Profil -->
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/imgProfile"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginTop="44dp"
+                android:contentDescription="Profile Picture"
+                android:src="@drawable/outline_account_circle_blue"
+                app:civ_border_color="@color/fomo_focus"
+                app:civ_border_width="2dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.028"
+                app:layout_constraintHorizontal_bias="0.498"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/textView9"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="18dp"
-                android:layout_marginTop="8dp"
-                android:fontFamily="sans-serif-medium"
-                android:text="Email :"
-                android:textColor="#000000"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.022"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/et_username" />
+            <!-- 🔹 Tombol Tambah Foto -->
 
+            <!-- 🔹 Input Fields -->
 
-            <EditText
-                android:id="@+id/et_email"
-                android:layout_width="359dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="124dp"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/rounded_corner"
-                android:drawableStart="@drawable/outline_contacts_product_24"
-                android:drawablePadding="8dp"
-                android:ems="10"
-                android:hint="Email"
-                android:inputType="text"
-                android:padding="8dp"
+            <ImageButton
+                android:id="@+id/btnAddPhoto"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginTop="116dp"
+                android:background="#00FFFFFF"
+                android:contentDescription="Add Profile Photo"
+                android:src="@drawable/round_add_a_photo_24"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.45"
+                app:layout_constraintHorizontal_bias="0.584"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="Autofill,TextFields" />
+                app:tint="@color/fomo_focus"
+                tools:ignore="TouchTargetSizeCheck" />
 
             <EditText
                 android:id="@+id/et_username"
-                android:layout_width="357dp"
-                android:layout_height="48dp"
-                android:layout_marginTop="40dp"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
                 android:background="@drawable/rounded_corner"
                 android:drawableStart="@drawable/outline_contacts_product_24"
                 android:drawablePadding="8dp"
-                android:ems="10"
                 android:hint="Username"
                 android:inputType="text"
                 android:padding="8dp"
+                android:textColor="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="Autofill,TextFields" />
+                app:layout_constraintTop_toBottomOf="@id/imgProfile" />
 
-            <TextView
-                android:id="@+id/textView10"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <EditText
+                android:id="@+id/et_email"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:fontFamily="sans-serif-medium"
-                android:text="Password :"
-                android:textColor="#000000"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/rounded_corner"
+                android:drawableStart="@drawable/round_email_24"
+                android:drawablePadding="8dp"
+                android:hint="Email"
+                android:padding="8dp"
+                android:textColor="@color/fomo_focus"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.076"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/et_email" />
+                app:layout_constraintTop_toBottomOf="@id/et_username" />
 
             <EditText
                 android:id="@+id/et_password"
-                android:layout_width="360dp"
-                android:layout_height="48dp"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="36dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/rounded_corner"
-                android:drawableStart="@drawable/outline_bathroom_24"
+                android:drawableStart="@drawable/round_lock_24"
                 android:drawablePadding="8dp"
-                android:ems="10"
                 android:hint="Password"
                 android:inputType="textPassword"
                 android:padding="8dp"
+                android:textColor="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.421"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/et_email"
-                tools:ignore="Autofill,HardcodedText" />
+                app:layout_constraintTop_toBottomOf="@id/et_email" />
 
+            <!-- 🔹 Tombol Sign Up -->
             <Button
                 android:id="@+id/btnSignUp"
-                android:layout_width="230dp"
-                android:layout_height="48dp"
+                android:layout_width="0dp"
+                android:layout_height="69dp"
+                android:layout_marginTop="32dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:backgroundTint="@color/fomo_focus"
                 android:text="Sign Up"
+                android:textColor="@color/white"
                 app:cornerRadius="26dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.496"
+                app:layout_constraintTop_toBottomOf="@id/et_password"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/et_password"
-                app:layout_constraintVertical_bias="0.173" />
+                app:layout_constraintEnd_toEndOf="parent" />
 
+            <!-- 🔹 Text Login -->
             <LinearLayout
                 android:id="@+id/linearLayout2"
                 android:layout_width="wrap_content"
@@ -204,28 +154,36 @@
                 android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0">
-
-                <TextView
-                    android:id="@+id/textView3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0"
-                    android:text="don't have an account? " />
-
-                <TextView
-                    android:id="@+id/tv_signup"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0"
-                    android:text="Sign In"
-                    android:textColor="@color/app_theme"
-                    android:textStyle="bold" />
+                app:layout_constraintStart_toStartOf="parent">
             </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="Sign Up"
+                android:textColor="@color/fomo_focus"
+                android:textSize="24sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
+
+    <ImageView
+        android:id="@+id/img_logo"
+        android:layout_width="111dp"
+        android:layout_height="144dp"
+        android:layout_marginTop="32dp"
+        android:contentDescription="FomoFocus Logo"
+        android:src="@drawable/fomofocusic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView2"
+        tools:ignore="NotSibling" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

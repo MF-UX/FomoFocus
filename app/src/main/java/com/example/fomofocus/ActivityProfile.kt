@@ -1,106 +1,145 @@
 package com.example.fomofocus
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
-import android.util.Log
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.PopupMenu
 import com.example.fomofocus.databinding.ActivityProfileBinding
 
 class ActivityProfile : AppCompatActivity() {
 
     private lateinit var binding: ActivityProfileBinding
     private var isPasswordVisible = false
+    private var isEditing = false   // MODE EDIT
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val sharedPref = getSharedPreferences("UserData", MODE_PRIVATE)
-        val username = sharedPref.getString("username", null)
-        val email = sharedPref.getString("email", null)
-        val password = sharedPref.getString("password", null)
+        val sharedPref = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        val username = sharedPref.getString("username", "")
+        val email = sharedPref.getString("email", "")
+        val password = sharedPref.getString("password", "")
 
-        if (username == null || email == null || password == null) {
-            Toast.makeText(this, "Silakan login terlebih dahulu", Toast.LENGTH_SHORT).show()
+        if (username.isNullOrEmpty()) {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
             return
         }
 
-        // Tampilkan data user
+        // Set data awal
         binding.username.setText(username)
         binding.email.setText(email)
         binding.username3.setText(password)
         binding.textView11.text = username
 
-        Log.d("USER_PROFILE", "Username: $username | Email: $email | Password: $password")
+        // Lock field agar tidak bisa edit sebelum klik "Edit Profile"
+        setEditable(false)
 
-        // Tombol back
+        // Back button
         binding.btnBack.setOnClickListener {
             startActivity(Intent(this, DashboardActivity::class.java))
-            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
             finish()
         }
 
-        // Simpan perubahan profil
-        binding.editProfile.setOnClickListener {
-            val newUsername = binding.username.text.toString().trim()
-            val newEmail = binding.email.text.toString().trim()
-            val newPassword = binding.username3.text.toString().trim()
+        // Menu settings (gear)
+        binding.settingsProfile.setOnClickListener {
+            val popup = PopupMenu(this, binding.settingsProfile)
+            popup.menuInflater.inflate(R.menu.menu_profile, popup.menu)
 
-            if (newUsername.isEmpty() || newEmail.isEmpty() || newPassword.isEmpty()) {
-                Toast.makeText(this, "Semua field wajib diisi!", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+            popup.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
 
-            with(sharedPref.edit()) {
-                putString("username", newUsername)
-                putString("email", newEmail)
-                putString("password", newPassword)
-                apply()
-            }
+                    // MASUK MODE EDIT
+                    R.id.simpan_profile -> {
+                        if (!isEditing) {
+                            enterEditMode()
+                        }
+                        true
+                    }
 
-            binding.textView11.text = newUsername
-            Log.d("USER_UPDATE", "Data diperbarui → Username: $newUsername | Email: $newEmail | Password: $newPassword")
-            Toast.makeText(this, "Profil berhasil diperbarui!", Toast.LENGTH_SHORT).show()
-        }
+                    // HAPUS AKUN
+                    R.id.hapus_akun -> {
+                        sharedPref.edit().clear().apply()
+                        startActivity(Intent(this, MainActivity::class.java))
+                        finish()
+                        true
+                    }
 
-        // Hapus akun
-        binding.hapusAkun.setOnClickListener {
-            AlertDialog.Builder(this)
-                .setTitle("Hapus Akun")
-                .setMessage("Apakah kamu yakin ingin menghapus akun ini? Semua data akan hilang permanen bro!")
-                .setPositiveButton("Y, Hapus aja") { _, _ ->
-                    sharedPref.edit().clear().apply()
-                    Log.d("USER_DELETE", "Akun berhasil dihapus dari SharedPreferences")
-                    Toast.makeText(this, "Akun berhasil dihapus!", Toast.LENGTH_SHORT).show()
-
-                    val intent = Intent(this, SignupActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                    finish()
+                    else -> false
                 }
-                .setNegativeButton("kaga jadi hapus", null)
-                .show()
+            }
+            popup.show()
         }
 
-        // 👁 Toggle password visibility
+        // Tombol SIMPAN (di XML sudah ada)
+        binding.btnSave.setOnClickListener {
+            saveProfile(sharedPref)
+        }
+
+        // Password toggle
         binding.ivShowPassword.setOnClickListener {
             isPasswordVisible = !isPasswordVisible
             if (isPasswordVisible) {
                 binding.username3.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-                binding.ivShowPassword.setImageResource(R.drawable.baseline_visibility_24)
             } else {
-                binding.username3.inputType =
-                    InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-                binding.ivShowPassword.setImageResource(R.drawable.baseline_visibility_24)
+                binding.username3.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
             }
-            // Geser cursor ke akhir teks
             binding.username3.setSelection(binding.username3.text?.length ?: 0)
         }
+    }
+
+    // ------------------- FUNCTIONS ----------------------
+
+    private fun enterEditMode() {
+        isEditing = true
+        setEditable(true)
+
+        binding.btnSave.animate().alpha(1f).setDuration(200)
+        binding.btnSave.isEnabled = true
+
+        Toast.makeText(this, "Mode edit aktif", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun saveProfile(sharedPref: android.content.SharedPreferences) {
+        if (!isEditing) return
+
+        val newUser = binding.username.text.toString().trim()
+        val newEmail = binding.email.text.toString().trim()
+        val newPass = binding.username3.text.toString().trim()
+
+        if (newUser.isEmpty() || newEmail.isEmpty() || newPass.isEmpty()) {
+            Toast.makeText(this, "Semua field wajib diisi!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        with(sharedPref.edit()) {
+            putString("username", newUser)
+            putString("email", newEmail)
+            putString("password", newPass)
+            apply()
+        }
+
+        binding.textView11.text = newUser
+
+        // Kunci kembali field setelah simpan
+        setEditable(false)
+        binding.btnSave.animate().alpha(0f).setDuration(200)
+        binding.btnSave.isEnabled = false
+
+        isEditing = false
+
+        Toast.makeText(this, "Profil berhasil diperbarui", Toast.LENGTH_SHORT).show()
+    }
+
+    // Aktif/nonaktifkan input
+    private fun setEditable(isEnabled: Boolean) {
+        binding.username.isEnabled = isEnabled
+        binding.email.isEnabled = isEnabled
+        binding.username3.isEnabled = isEnabled
     }
 }

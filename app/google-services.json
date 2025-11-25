@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "907730237145",
+    "project_id": "fomofocus-9d743",
+    "storage_bucket": "fomofocus-9d743.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:907730237145:android:bfb4c68b0ec085aa3cb0c8",
+        "android_client_info": {
+          "package_name": "com.example.fomofocus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "907730237145-ucc34sdq9cl39puf8n9n2ol85bf8qahq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.fomofocus",
+            "certificate_hash": "b2138a28d19ed055b562eec86f25628eabefb307"
+          }
+        },
+        {
+          "client_id": "907730237145-uv8bffinq7m5gabdq9ee2hepmd4uln5n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1XMiLFoal7tj8xYgoToPAC35ioCd5Szs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "907730237145-uv8bffinq7m5gabdq9ee2hepmd4uln5n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
