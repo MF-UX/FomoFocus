@@ -13,7 +13,7 @@ class ActivityProfile : AppCompatActivity() {
 
     private lateinit var binding: ActivityProfileBinding
     private var isPasswordVisible = false
-    private var isEditing = false   // MODE EDIT
+    private var isEditing = false   // Mode edit profile
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,28 +25,35 @@ class ActivityProfile : AppCompatActivity() {
         val email = sharedPref.getString("email", "")
         val password = sharedPref.getString("password", "")
 
+        // Cek login
         if (username.isNullOrEmpty()) {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
             return
         }
 
-        // Set data awal
+        // Set data awal ke tampilan
         binding.username.setText(username)
         binding.email.setText(email)
         binding.username3.setText(password)
         binding.textView11.text = username
 
-        // Lock field agar tidak bisa edit sebelum klik "Edit Profile"
+        // Lock semua input awal
         setEditable(false)
 
-        // Back button
+        // HIDE tombol Save awal
+        binding.btnSave.alpha = 0f
+        binding.btnSave.isEnabled = false
+
+        // Tombol kembali
         binding.btnBack.setOnClickListener {
             startActivity(Intent(this, DashboardActivity::class.java))
             finish()
         }
 
-        // Menu settings (gear)
+        // -------------------------------
+        //          POPUP MENU
+        // -------------------------------
         binding.settingsProfile.setOnClickListener {
             val popup = PopupMenu(this, binding.settingsProfile)
             popup.menuInflater.inflate(R.menu.menu_profile, popup.menu)
@@ -56,9 +63,7 @@ class ActivityProfile : AppCompatActivity() {
 
                     // MASUK MODE EDIT
                     R.id.simpan_profile -> {
-                        if (!isEditing) {
-                            enterEditMode()
-                        }
+                        if (!isEditing) enterEditMode()
                         true
                     }
 
@@ -73,36 +78,34 @@ class ActivityProfile : AppCompatActivity() {
                     else -> false
                 }
             }
+
             popup.show()
         }
 
-        // Tombol SIMPAN (di XML sudah ada)
+        // ------------ SIMPAN DATA -------------
         binding.btnSave.setOnClickListener {
             saveProfile(sharedPref)
         }
 
-        // Password toggle
+        // ------------ PASSWORD TOGGLE -------------
         binding.ivShowPassword.setOnClickListener {
-            isPasswordVisible = !isPasswordVisible
-            if (isPasswordVisible) {
-                binding.username3.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-            } else {
-                binding.username3.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-            }
-            binding.username3.setSelection(binding.username3.text?.length ?: 0)
+            togglePasswordVisibility()
         }
     }
 
-    // ------------------- FUNCTIONS ----------------------
+    // =========================================================
+    //                       FUNGSI
+    // =========================================================
 
     private fun enterEditMode() {
         isEditing = true
         setEditable(true)
 
+        // Tampilkan tombol Save Changes
         binding.btnSave.animate().alpha(1f).setDuration(200)
         binding.btnSave.isEnabled = true
 
-        Toast.makeText(this, "Mode edit aktif", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Silahkan di perbarui!", Toast.LENGTH_SHORT).show()
     }
 
     private fun saveProfile(sharedPref: android.content.SharedPreferences) {
@@ -117,7 +120,8 @@ class ActivityProfile : AppCompatActivity() {
             return
         }
 
-        with(sharedPref.edit()) {
+        // Simpan ke shared preferences
+        sharedPref.edit().apply {
             putString("username", newUser)
             putString("email", newEmail)
             putString("password", newPass)
@@ -126,17 +130,27 @@ class ActivityProfile : AppCompatActivity() {
 
         binding.textView11.text = newUser
 
-        // Kunci kembali field setelah simpan
+        // Lock kembali setelah save
         setEditable(false)
+
+        // Hide tombol Save Changes lagi
         binding.btnSave.animate().alpha(0f).setDuration(200)
         binding.btnSave.isEnabled = false
 
         isEditing = false
-
         Toast.makeText(this, "Profil berhasil diperbarui", Toast.LENGTH_SHORT).show()
     }
 
-    // Aktif/nonaktifkan input
+    private fun togglePasswordVisibility() {
+        isPasswordVisible = !isPasswordVisible
+        binding.username3.inputType = if (isPasswordVisible) {
+            InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+        } else {
+            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+        }
+        binding.username3.setSelection(binding.username3.text?.length ?: 0)
+    }
+
     private fun setEditable(isEnabled: Boolean) {
         binding.username.isEnabled = isEnabled
         binding.email.isEnabled = isEnabled

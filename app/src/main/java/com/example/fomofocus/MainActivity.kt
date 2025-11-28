@@ -2,6 +2,7 @@ package com.example.fomofocus
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,6 +27,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
 
+    // ==============================
+    // 🔹 TAMBAHAN UNTUK SHOW PASSWORD
+    // ==============================
+    private var isPasswordVisible = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -44,6 +50,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
+
+        // ======================================================
+        // 🔹 SHOW / HIDE PASSWORD (Kode FIX Ditambahkan Disini)
+        // ======================================================
+        binding.ivShowPassword?.setOnClickListener {
+            isPasswordVisible = !isPasswordVisible
+
+            if (isPasswordVisible) {
+                binding.etPassword.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                binding.ivShowPassword?.setImageResource(R.drawable.baseline_visibility_24)
+            } else {
+                binding.etPassword.inputType =
+                    InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                binding.ivShowPassword?.setImageResource(R.drawable.round_visibility_off_24)
+            }
+
+            binding.etPassword.setSelection(binding.etPassword.text.length)
+        }
+
+
         // 🔹 Tombol login manual (XAMPP)
         binding.btnSignIn.setOnClickListener {
             val loginInput = binding.etEmail.text.toString().trim()
@@ -54,7 +80,7 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val url = "http://192.168.1.10/Database/login.php"
+            val url = "http://172.20.10.3/Database/login.php"
 
             val request = object : StringRequest(
                 Request.Method.POST, url,

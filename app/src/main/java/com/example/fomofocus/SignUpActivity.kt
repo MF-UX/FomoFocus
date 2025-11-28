@@ -2,6 +2,7 @@ package com.example.fomofocus
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.Request
@@ -12,11 +13,33 @@ import org.json.JSONObject
 
 class SignupActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignupBinding
+    private var isPasswordVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySignupBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.ivShowPassword.setOnClickListener {
+            isPasswordVisible = !isPasswordVisible
+
+            if (isPasswordVisible) {
+                binding.etPassword.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                binding.ivShowPassword.setImageResource(R.drawable.baseline_visibility_24)
+            } else {
+                binding.etPassword.inputType =
+                    InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                binding.ivShowPassword.setImageResource(R.drawable.round_visibility_off_24)
+            }
+
+            binding.etPassword.setSelection(binding.etPassword.text.length)
+        }
+
+        // Tombol kembali
+        binding.btnBack.setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        }
 
         binding.btnSignUp.setOnClickListener {
             val username = binding.etUsername.text.toString().trim()
@@ -28,7 +51,7 @@ class SignupActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val url = "http://192.168.1.10/Database/register.php"
+            val url = "http://172.20.10.3/Database/register.php"
 
             val request = object : StringRequest(
                 Request.Method.POST, url,

@@ -47,8 +47,19 @@ class DashboardActivity : AppCompatActivity() {
         dashboardLayout = findViewById(R.id.dashboardLayout)
         btnMenu = findViewById(R.id.btn_menu)
 
-        alarmSound = MediaPlayer.create(this, R.raw.alarm_sound)
-        createNotificationChannel()
+        val audioAttributes = android.media.AudioAttributes.Builder()
+            .setUsage(android.media.AudioAttributes.USAGE_ALARM)
+            .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build()
+
+        alarmSound = MediaPlayer().apply {
+            setAudioAttributes(audioAttributes)
+            val afd = resources.openRawResourceFd(R.raw.audio)
+            setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
+            afd.close()
+            isLooping = false   // alarm 1x, kalau mau looping ganti true
+            prepare()
+        }
 
         // ============================
         // SPINNER MENIT FIX
@@ -61,13 +72,17 @@ class DashboardActivity : AppCompatActivity() {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerDuration.adapter = adapter
 
-        spinnerDuration.setSelection(2) // default 15 menit (index 2)
-
         spinnerDuration.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: android.view.View?, position: Int, id: Long) {
                 selectedTimeInMinutes = parent.getItemAtPosition(position).toString().toInt()
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+
+        val btnHistory = findViewById<Button>(R.id.btnHistory)
+        btnHistory.setOnClickListener {
+            val intent = Intent(this, HistoryActivity::class.java)
+            startActivity(intent)
         }
 
         // ============================
@@ -81,7 +96,7 @@ class DashboardActivity : AppCompatActivity() {
                         startActivity(Intent(this, ActivityProfile::class.java))
                         true
                     }
-                    R.id.history -> {
+                    R.id.btnHistory -> {
                         val intent = Intent(this, HistoryActivity::class.java)
                         startActivity(intent)
                         true
@@ -135,7 +150,7 @@ class DashboardActivity : AppCompatActivity() {
         if (isBreakMode) {
             dashboardLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.green))
         } else {
-            dashboardLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.biru_tosca))
+            dashboardLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.red))
         }
 
         countDownTimer = object : CountDownTimer(timeInMillis, 1000) {
@@ -175,12 +190,12 @@ class DashboardActivity : AppCompatActivity() {
             tvMode.text = "Break Mode"
             dashboardLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.green))
             btnStart.setBackgroundColor(ContextCompat.getColor(this, R.color.white))
-            btnStart.setTextColor(ContextCompat.getColor(this, R.color.green))
+            btnStart.setTextColor(ContextCompat.getColor(this, R.color.red))
         } else {
-            tvMode.text = "FomoFocus Mode"
+            tvMode.text = "Focus Mode"
             dashboardLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.white))
-            btnStart.setBackgroundColor(ContextCompat.getColor(this, R.color.red))
-            btnStart.setTextColor(ContextCompat.getColor(this, R.color.white))
+            btnStart.setBackgroundColor(ContextCompat.getColor(this, R.color.white))
+            btnStart.setTextColor(ContextCompat.getColor(this, R.color.red))
         }
     }
 

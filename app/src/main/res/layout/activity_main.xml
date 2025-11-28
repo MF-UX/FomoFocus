@@ -127,6 +127,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/et_email"
                 tools:ignore="Autofill,HardcodedText" />
 
+
             <TextView
                 android:id="@+id/tv_forget_password"
                 android:layout_width="wrap_content"
@@ -241,6 +242,23 @@
                     android:textColor="@color/app_theme"
                     android:textStyle="bold" />
             </LinearLayout>
+
+            <ImageView
+                android:id="@+id/ivShowPassword"
+                android:layout_width="30dp"
+                android:layout_height="32dp"
+                android:layout_alignTop="@+id/et_password"
+                android:layout_alignEnd="@+id/et_password"
+                android:layout_alignBottom="@+id/et_password"
+                android:padding="4dp"
+                android:src="@drawable/round_visibility_off_24"
+                app:layout_constraintBottom_toBottomOf="@+id/et_password"
+                app:layout_constraintEnd_toEndOf="@+id/et_password"
+                app:layout_constraintHorizontal_bias="0.96"
+                app:layout_constraintStart_toStartOf="@+id/et_password"
+                app:layout_constraintTop_toTopOf="@+id/et_password"
+                app:tint="@color/black"
+                tools:ignore="MissingConstraints" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

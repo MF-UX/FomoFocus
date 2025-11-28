@@ -27,7 +27,7 @@
         android:id="@+id/tvMode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="FomoFocus Mode"
+        android:text="Focus Mode"
         android:textColor="@color/fomo_focus"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -77,7 +77,7 @@
         android:id="@+id/imageView7"
         android:layout_width="522dp"
         android:layout_height="753dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="56dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
@@ -104,10 +104,10 @@
         android:layout_width="156dp"
         android:layout_height="30dp"
         android:background="@drawable/rounded_corner_white"
-        android:padding="4dp"
-        android:spinnerMode="dropdown"
         android:gravity="center"
+        android:padding="4dp"
         android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        android:spinnerMode="dropdown"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -154,6 +154,22 @@
         app:layout_constraintVertical_bias="0.724" />
 
     <Button
+        android:id="@+id/btnHistory"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/app_theme_light"
+        android:text="HISTORY"
+        android:textAllCaps="false"
+        android:textColor="@color/black"
+        app:cornerRadius="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.516"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.898" />
+
+    <Button
         android:id="@+id/btnSwitchMode"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
@@ -167,6 +183,6 @@
         app:layout_constraintHorizontal_bias="0.516"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.822" />
+        app:layout_constraintVertical_bias="0.811" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
