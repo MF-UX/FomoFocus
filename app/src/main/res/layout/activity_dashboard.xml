@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/dashboardLayout"
@@ -7,182 +8,218 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
+    <!-- Top Menu Button -->
+
     <ImageButton
         android:id="@+id/btn_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="#00FFFFFF"
-        android:contentDescription="@string/menu_button"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:backgroundTint="@android:color/transparent"
+        android:contentDescription="Menu"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.005"
         app:srcCompat="@drawable/sharp_more_vert_24"
-        app:tint="@color/black"
-        tools:ignore="TouchTargetSizeCheck" />
+        app:tint="@color/black" />
+
+    <!-- Mode Title -->
+
+    <!-- Timer Card -->
 
     <TextView
         android:id="@+id/tvMode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:text="Focus Mode"
         android:textColor="@color/fomo_focus"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_menu" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/timerCard"
+        android:layout_width="320dp"
+        android:layout_height="380dp"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="#FFFFFF"
+        app:cardCornerRadius="30dp"
+        app:cardElevation="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.022" />
+        app:layout_constraintTop_toBottomOf="@id/tvMode">
 
-    <ImageView
-        android:id="@+id/imageView5"
-        android:layout_width="275dp"
-        android:layout_height="263dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.109"
-        app:srcCompat="@drawable/logo_timer" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white">
 
+            <!-- Circular Progress -->
 
-    <ImageView
-        android:id="@+id/imageView4"
-        android:layout_width="87dp"
-        android:layout_height="59dp"
-        android:layout_marginBottom="64dp"
-        android:rotation="44"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView5"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.413"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/outline_pen_size_1_24" />
+            <!-- Timer Text -->
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/circleProgress"
+                android:layout_width="220dp"
+                android:layout_height="220dp"
+                android:layout_marginTop="16dp"
+                android:indeterminate="false"
+                android:max="100"
+                android:progress="0"
+                app:indicatorColor="@color/fomo_focus"
+                app:indicatorSize="220dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.494"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:trackColor="@color/grey_light"
+                app:trackThickness="12dp" />
 
-    <ImageView
-        android:id="@+id/imageView6"
-        android:layout_width="87dp"
-        android:layout_height="59dp"
-        android:layout_marginBottom="64dp"
-        android:rotation="44"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView5"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.623"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/outline_pen_size_1_24" />
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="hr"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.302"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.423" />
 
-    <ImageView
-        android:id="@+id/imageView7"
-        android:layout_width="522dp"
-        android:layout_height="753dp"
-        android:layout_marginTop="56dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.504"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/fomofocusback" />
+            <TextView
+                android:id="@+id/textView10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="min"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.501"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.423" />
 
-    <TextView
-        android:id="@+id/tvTimer"
-        android:layout_width="157dp"
-        android:layout_height="50dp"
-        android:text="00:00:00"
-        android:textColor="@color/white"
-        android:textSize="34sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.574"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.246" />
+            <TextView
+                android:id="@+id/tvTimer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:text="00:00:00"
+                android:textColor="#333"
+                android:textSize="34sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/circleProgress"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/circleProgress" />
 
+            <!-- Play/Pause Button -->
+
+            <!-- Stop Button -->
+
+            <ImageButton
+                android:id="@+id/btnPlay"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="88dp"
+                android:background="@drawable/round_button"
+                android:contentDescription="@string/btnPlay"
+                android:scaleType="fitCenter"
+                android:src="@drawable/round_play_circle_outline_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/circleProgress"
+                app:layout_constraintVertical_bias="0.289"
+                app:tint="@color/fomo_focus" />
+
+            <ImageButton
+                android:id="@+id/btnStop"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginEnd="88dp"
+                android:background="@drawable/round_filled"
+                android:contentDescription="@string/btnStop"
+                android:scaleType="fitCenter"
+                android:src="@drawable/outline_nest_heat_link_e_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/circleProgress"
+                app:layout_constraintVertical_bias="0.285"
+                app:tint="@color/fomo_focus" />
+
+            <TextView
+                android:id="@+id/textView13"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="sec"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.704"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.423" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Duration Spinner & Lesson EditText -->
     <Spinner
         android:id="@+id/spinnerDuration"
-        android:layout_width="156dp"
-        android:layout_height="30dp"
-        android:background="@drawable/rounded_corner_white"
+        android:layout_width="150dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/rounded_corner"
         android:gravity="center"
-        android:padding="4dp"
-        android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        android:spinnerMode="dropdown"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.062"
+        app:layout_constraintEnd_toStartOf="@+id/etDuration2"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.53" />
-
+        app:layout_constraintTop_toBottomOf="@id/timerCard" />
 
     <EditText
         android:id="@+id/etDuration2"
-        android:layout_width="156dp"
-        android:layout_height="30dp"
-        android:background="@drawable/rounded_corner_white"
-        android:fontFamily="sans-serif"
+        android:layout_width="150dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="40dp"
+        android:background="@drawable/rounded_corner"
         android:gravity="center"
-        android:hint="pelajaran"
-        android:inputType="text"
-        android:textColor="@color/white"
-        android:textColorHint="@color/white"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.866"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.53"
-        tools:ignore="TouchTargetSizeCheck" />
-
-    <Button
-        android:id="@+id/btnStart"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/app_theme_light"
-        android:text="START"
-        android:textAllCaps="false"
+        android:hint="Pelajaran"
         android:textColor="@color/black"
-        app:cornerRadius="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textColorHint="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.516"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.724" />
+        app:layout_constraintStart_toEndOf="@+id/spinnerDuration"
+        app:layout_constraintTop_toBottomOf="@id/timerCard" />
 
-    <Button
-        android:id="@+id/btnHistory"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/app_theme_light"
-        android:text="HISTORY"
-        android:textAllCaps="false"
-        android:textColor="@color/black"
-        app:cornerRadius="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.516"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.898" />
+    <!-- Switch Mode -->
+
+    <!-- History -->
 
     <Button
         android:id="@+id/btnSwitchMode"
         android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/white"
+        android:layout_height="50dp"
+        android:layout_marginBottom="8dp"
+        android:backgroundTint="@color/fomo_focus"
         android:text="Switch Mode"
-        android:textAllCaps="false"
-        android:textColor="@color/green"
+        android:textColor="@color/white"
+        app:cornerRadius="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnHistory"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btnHistory"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="36dp"
+        android:backgroundTint="@color/fomo_focus"
+        android:text="History"
+        android:textColor="@color/white"
         app:cornerRadius="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.516"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.811" />
-
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

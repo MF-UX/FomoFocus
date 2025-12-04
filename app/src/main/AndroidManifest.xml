@@ -2,20 +2,16 @@
 <manifest xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- 🔹 Izin dasar -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!-- 🔹 Izin kamera & penyimpanan -->
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" />
 
-    <!-- 🔹 (Opsional) untuk notifikasi -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!-- 🔹 Tandai kamera sebagai opsional -->
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -34,32 +30,26 @@
             android:usesCleartextTraffic="true"
             android:networkSecurityConfig="@xml/network_security_config">
 
-        <!-- 🔹 Profile Activity -->
         <activity
             android:name=".ActivityProfile"
             android:exported="false" />
 
-        <!-- Riwayat -->
         <activity
             android:name=".HistoryActivity"
             android:exported="false"/>
 
-        <!-- 🔹 Dashboard -->
         <activity
             android:name=".DashboardActivity"
             android:exported="false" />
 
-        <!-- 🔹 Login -->
         <activity
             android:name=".MainActivity"
             android:exported="true" />
 
-        <!-- 🔹 Signup -->
         <activity
             android:name=".SignupActivity"
             android:exported="false" />
 
-        <!-- 🔹 Start (launcher) -->
         <activity
             android:name=".StartActivity"
             android:exported="true">
@@ -69,12 +59,10 @@
             </intent-filter>
         </activity>
 
-        <!-- 🔹 Untuk Google Sign-In -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <!-- 🔹 FileProvider -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

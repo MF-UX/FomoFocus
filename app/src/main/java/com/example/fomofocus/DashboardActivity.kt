@@ -1,25 +1,32 @@
 package com.example.fomofocus
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.media.AudioAttributes
 import android.media.MediaPlayer
+import android.media.RingtoneManager
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.widget.*
+import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.appcompat.widget.PopupMenu
-import android.util.Log
+import com.google.android.material.progressindicator.CircularProgressIndicator
 
 class DashboardActivity : AppCompatActivity() {
 
     private lateinit var tvTimer: TextView
-    private lateinit var btnStart: Button
+    private lateinit var btnPlay: ImageButton
+    private lateinit var btnStop: ImageButton
     private lateinit var btnSwitchMode: Button
     private lateinit var tvMode: TextView
     private lateinit var spinnerDuration: Spinner
@@ -27,29 +34,82 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var dashboardLayout: ConstraintLayout
     private lateinit var btnMenu: ImageButton
     private lateinit var alarmSound: MediaPlayer
+    private lateinit var circleProgress: CircularProgressIndicator
 
     private var countDownTimer: CountDownTimer? = null
     private var isRunning = false
-    private var selectedTimeInMinutes = 0
+    private var isPaused = false
     private var isBreakMode = false
+    private var selectedTimeInMinutes = 0
+    private var fullTimeInMillis: Long = 0L
+    private var remainingTimeInMillis: Long = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
 
-        // Inisialisasi View
+        createNotificationChannel()
+
         tvTimer = findViewById(R.id.tvTimer)
-        btnStart = findViewById(R.id.btnStart)
+        btnPlay = findViewById(R.id.btnPlay)
+        btnStop = findViewById(R.id.btnStop)
         btnSwitchMode = findViewById(R.id.btnSwitchMode)
         tvMode = findViewById(R.id.tvMode)
         spinnerDuration = findViewById(R.id.spinnerDuration)
         etLesson = findViewById(R.id.etDuration2)
         dashboardLayout = findViewById(R.id.dashboardLayout)
         btnMenu = findViewById(R.id.btn_menu)
+        circleProgress = findViewById(R.id.circleProgress)
 
-        val audioAttributes = android.media.AudioAttributes.Builder()
-            .setUsage(android.media.AudioAttributes.USAGE_ALARM)
-            .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)
+        initAlarm()
+        initSpinner()
+        initMenu()
+        updateModeUI()
+
+        findViewById<Button>(R.id.btnHistory).setOnClickListener {
+            startActivity(Intent(this, HistoryActivity::class.java))
+        }
+
+        btnSwitchMode.setOnClickListener {
+            isBreakMode = !isBreakMode
+            updateModeUI()
+        }
+
+        btnPlay.setOnClickListener {
+            val lesson = etLesson.text.toString().trim()
+            if (lesson.isEmpty()) {
+                Toast.makeText(this, "Isi pelajaran dulu sebelum mulai!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (selectedTimeInMinutes <= 0) {
+                Toast.makeText(this, "Pilih durasi timer!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // SAVE HISTORY HANYA SEKALI SAAT START PERTAMA
+            if (!isRunning && !isPaused) {
+                saveHistory(selectedTimeInMinutes, lesson)
+                fullTimeInMillis = selectedTimeInMinutes * 60 * 1000L
+                remainingTimeInMillis = fullTimeInMillis
+            }
+
+            when {
+                !isRunning && !isPaused -> startTimer(remainingTimeInMillis)  // START
+                isPaused -> startTimer(remainingTimeInMillis)                 // RESUME
+                isRunning -> pauseTimer()                                     // PAUSE
+            }
+        }
+
+        btnStop.setOnClickListener {
+            stopTimer()
+        }
+    }
+
+    private fun initAlarm() {
+        val audioAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_ALARM)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
             .build()
 
         alarmSound = MediaPlayer().apply {
@@ -57,13 +117,12 @@ class DashboardActivity : AppCompatActivity() {
             val afd = resources.openRawResourceFd(R.raw.audio)
             setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
             afd.close()
-            isLooping = false   // alarm 1x, kalau mau looping ganti true
+            isLooping = false
             prepare()
         }
+    }
 
-        // ============================
-        // SPINNER MENIT FIX
-        // ============================
+    private fun initSpinner() {
         val adapter = ArrayAdapter.createFromResource(
             this,
             R.array.timer_minutes,
@@ -73,20 +132,30 @@ class DashboardActivity : AppCompatActivity() {
         spinnerDuration.adapter = adapter
 
         spinnerDuration.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: android.view.View?, position: Int, id: Long) {
-                selectedTimeInMinutes = parent.getItemAtPosition(position).toString().toInt()
+            override fun onItemSelected(
+                parent: AdapterView<*>, view: android.view.View?, position: Int, id: Long
+            ) {
+                val selected = parent.getItemAtPosition(position).toString()
+                if (selected == "Pilih Waktu") {
+                    selectedTimeInMinutes = 0
+                    tvTimer.text = "00:00:00"
+                    return
+                }
+
+                selectedTimeInMinutes = selected.toInt()
+
+                if (!isRunning) {
+                    val hours = selectedTimeInMinutes / 60
+                    val minutes = selectedTimeInMinutes % 60
+                    tvTimer.text = String.format("%02d:%02d:%02d", hours, minutes, 0)
+                }
             }
+
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
+    }
 
-        val btnHistory = findViewById<Button>(R.id.btnHistory)
-        btnHistory.setOnClickListener {
-            val intent = Intent(this, HistoryActivity::class.java)
-            startActivity(intent)
-        }
-
-        // ============================
-
+    private fun initMenu() {
         btnMenu.setOnClickListener { view ->
             val popup = PopupMenu(this, view)
             popup.menuInflater.inflate(R.menu.menu_dashboard, popup.menu)
@@ -96,144 +165,166 @@ class DashboardActivity : AppCompatActivity() {
                         startActivity(Intent(this, ActivityProfile::class.java))
                         true
                     }
+
                     R.id.btnHistory -> {
-                        val intent = Intent(this, HistoryActivity::class.java)
-                        startActivity(intent)
+                        startActivity(Intent(this, HistoryActivity::class.java))
                         true
                     }
+
                     R.id.action_signout -> {
                         val sharedPref = getSharedPreferences("UserData", MODE_PRIVATE)
-                        val username = sharedPref.getString("username", "unknown")
-                        val email = sharedPref.getString("email", "unknown")
                         sharedPref.edit().putBoolean("isLoggedIn", false).apply()
-                        Log.d("USER_SIGNOUT", "User $username ($email) logout — data tetap tersimpan.")
-                        Toast.makeText(this, "Berhasil keluar akun", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(this, MainActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        startActivity(intent)
+                        startActivity(Intent(this, MainActivity::class.java).apply {
+                            flags =
+                                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        })
                         finish()
                         true
                     }
+
                     else -> false
                 }
             }
             popup.show()
         }
-
-        // Tombol Start / Stop
-        btnStart.setOnClickListener {
-
-            // Simpan history
-            val lesson = etLesson.text.toString().trim()
-            saveHistory(selectedTimeInMinutes, lesson)
-
-            if (!isRunning) {
-                startTimer(selectedTimeInMinutes * 60 * 1000L)
-            } else {
-                stopTimer()
-            }
-        }
-
-        // Tombol Switch Mode
-        btnSwitchMode.setOnClickListener {
-            isBreakMode = !isBreakMode
-            updateModeUI()
-        }
-
-        updateModeUI()
     }
 
     private fun startTimer(timeInMillis: Long) {
         isRunning = true
-        btnStart.text = "STOP"
+        isPaused = false
+        btnPlay.setImageResource(R.drawable.outline_pause_circle_24)
+        btnStop.setImageResource(R.drawable.baseline_stop_circle_24)
 
-        if (isBreakMode) {
-            dashboardLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.green))
-        } else {
-            dashboardLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.red))
-        }
-
+        countDownTimer?.cancel()
         countDownTimer = object : CountDownTimer(timeInMillis, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                val hours = millisUntilFinished / 1000 / 3600
-                val minutes = (millisUntilFinished / 1000 / 60) % 60
-                val seconds = (millisUntilFinished / 1000) % 60
+                remainingTimeInMillis = millisUntilFinished
+
+                val totalSeconds = millisUntilFinished / 1000
+                val hours = totalSeconds / 3600
+                val minutes = (totalSeconds % 3600) / 60
+                val seconds = totalSeconds % 60
                 tvTimer.text = String.format("%02d:%02d:%02d", hours, minutes, seconds)
+
+                val progressPercent =
+                    ((millisUntilFinished.toFloat() / fullTimeInMillis) * 100).toInt()
+                circleProgress.progress = progressPercent
             }
 
+            @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
             override fun onFinish() {
                 isRunning = false
-                tvTimer.text = "00:00:00"
-                btnStart.text = "START"
-                dashboardLayout.setBackgroundColor(ContextCompat.getColor(this@DashboardActivity, R.color.white))
-                alarmSound.start()
-
-                val msg = if (isBreakMode)
-                    "Waktu istirahat selesai, ayo fokus lagi!"
-                else
-                    "Waktu habis, istirahat dulu!"
-
-                showNotification("FomoFocus", msg)
+                isPaused = false
+                showTimerNotification()
+                resetUIAfterTimer()
             }
         }.start()
     }
 
+    private fun pauseTimer() {
+        countDownTimer?.cancel()
+        isPaused = true
+        isRunning = false
+        btnPlay.setImageResource(R.drawable.round_play_circle_outline_24)
+        btnStop.setImageResource(R.drawable.baseline_stop_circle_24)
+    }
+
     private fun stopTimer() {
         countDownTimer?.cancel()
-        isRunning = false
-        btnStart.text = "START"
+        resetUIAfterTimer()
+    }
+
+    private fun resetUIAfterTimer() {
+        remainingTimeInMillis = fullTimeInMillis
+        tvTimer.text = "00:00:00"
+        circleProgress.progress = 0
+        btnPlay.setImageResource(R.drawable.round_play_circle_outline_24)
+        btnStop.setImageResource(R.drawable.outline_nest_heat_link_e_24)
+        etLesson.setText("")
+        spinnerDuration.setSelection(0)
         dashboardLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.white))
+        isRunning = false
+        isPaused = false
     }
 
     private fun updateModeUI() {
         if (isBreakMode) {
             tvMode.text = "Break Mode"
             dashboardLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.green))
-            btnStart.setBackgroundColor(ContextCompat.getColor(this, R.color.white))
-            btnStart.setTextColor(ContextCompat.getColor(this, R.color.red))
         } else {
             tvMode.text = "Focus Mode"
             dashboardLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.white))
-            btnStart.setBackgroundColor(ContextCompat.getColor(this, R.color.white))
-            btnStart.setTextColor(ContextCompat.getColor(this, R.color.red))
         }
     }
 
     private fun saveHistory(timeInMinutes: Int, lesson: String) {
         val sharedPref = getSharedPreferences("FomoFocusHistory", MODE_PRIVATE)
-        val historySet = sharedPref.getStringSet("history", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
-
+        val historySet =
+            sharedPref.getStringSet("history", mutableSetOf())?.toMutableSet()
+                ?: mutableSetOf()
         val timestamp = System.currentTimeMillis()
         val record = "$timestamp|$timeInMinutes menit|Pelajaran: $lesson"
         historySet.add(record)
         sharedPref.edit().putStringSet("history", historySet).apply()
     }
 
-    private fun showNotification(title: String, message: String) {
-        val builder = NotificationCompat.Builder(this, "timer_channel")
-            .setSmallIcon(R.drawable.fomofocusic)
-            .setContentTitle(title)
-            .setContentText(message)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
+    private fun showTimerNotification() {
+        val channelId = "timer_channel_v2"
+        val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
-        val notificationManager = NotificationManagerCompat.from(this)
-        if (Build.VERSION.SDK_INT < 33 || checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)
-            == android.content.pm.PackageManager.PERMISSION_GRANTED
-        ) {
-            notificationManager.notify(1001, builder.build())
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val audioAttributes = AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build()
+
+            val channel = NotificationChannel(
+                channelId,
+                "Timer Completed",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                enableLights(true)
+                enableVibration(true)
+                setSound(soundUri, audioAttributes)
+            }
+
+            val manager = getSystemService(NotificationManager::class.java)
+            manager.createNotificationChannel(channel)
         }
+
+        val intent = Intent(this, DashboardActivity::class.java).apply {
+            flags =
+                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            this, 0, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val builder = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.drawable.fomofocusic)
+            .setContentTitle("Timer Selesai")
+            .setContentText("Waktu belajar kamu telah selesai!")
+            .setAutoCancel(true)
+            .setSound(soundUri)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent)
+
+        NotificationManagerCompat.from(this).notify(1001, builder.build())
+        alarmSound.start()
     }
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "TimerChannel"
-            val descriptionText = "Channel for FomoFocus Timer Notifications"
-            val importance = NotificationManager.IMPORTANCE_HIGH
-            val channel = NotificationChannel("timer_channel", name, importance).apply {
-                description = descriptionText
-            }
-            val notificationManager = getSystemService(NotificationManager::class.java)
-            notificationManager.createNotificationChannel(channel)
+            val channel = NotificationChannel(
+                "timer_channel",
+                "TimerChannel",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            val notifMng = getSystemService(NotificationManager::class.java)
+            notifMng.createNotificationChannel(channel)
         }
     }
 

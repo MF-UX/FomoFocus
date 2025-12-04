@@ -15,7 +15,6 @@ class StartActivity : AppCompatActivity() {
         val sharedPref = getSharedPreferences("UserData", MODE_PRIVATE)
         val isLoggedIn = sharedPref.getBoolean("isLoggedIn", false)
 
-        // 🔹 Jika user sudah login, langsung ke Dashboard
         if (isLoggedIn) {
             val intent = Intent(this, DashboardActivity::class.java)
             startActivity(intent)

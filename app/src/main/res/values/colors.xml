@@ -15,4 +15,5 @@
     <color name="edit_text_border">#03A9F4</color>
     <color name="edit_text_background">#F6FBFF</color>
     <color name="biru_tosca">#5CE1E6</color>
+    <color name="grey_light">#D3D3D3</color>
 </resources>

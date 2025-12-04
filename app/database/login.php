@@ -1,7 +1,7 @@
 <?php
 include "koneksi.php";
 
-$loginInput = $_POST['loginInput']; // bisa username atau gmail
+$loginInput = $_POST['loginInput'];
 $password = $_POST['password'];
 
 $query = "SELECT * FROM users WHERE (gmail='$loginInput' OR username='$loginInput') AND password='$password'";

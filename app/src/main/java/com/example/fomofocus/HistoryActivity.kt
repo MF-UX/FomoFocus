@@ -64,7 +64,7 @@ class HistoryActivity : AppCompatActivity() {
         }
 
         btnClearHistory.setOnClickListener {
-            sharedPref.edit().clear().apply() // hapus semua history
+            sharedPref.edit().clear().apply()
             historyList.clear()
             (listView.adapter as BaseAdapter).notifyDataSetChanged()
         }

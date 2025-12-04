@@ -26,10 +26,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
-
-    // ==============================
-    // 🔹 TAMBAHAN UNTUK SHOW PASSWORD
-    // ==============================
     private var isPasswordVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +35,6 @@ class MainActivity : AppCompatActivity() {
 
         firebaseAuth = FirebaseAuth.getInstance()
 
-        // 🔹 Konfigurasi Google Sign-In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
@@ -51,9 +46,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun initUI() {
 
-        // ======================================================
-        // 🔹 SHOW / HIDE PASSWORD (Kode FIX Ditambahkan Disini)
-        // ======================================================
         binding.ivShowPassword?.setOnClickListener {
             isPasswordVisible = !isPasswordVisible
 
@@ -70,7 +62,6 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        // 🔹 Tombol login manual (XAMPP)
         binding.btnSignIn.setOnClickListener {
             val loginInput = binding.etEmail.text.toString().trim()
             val password = binding.etPassword.text.toString().trim()
@@ -129,12 +120,10 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        // 🔹 Tombol daftar
         binding.tvSignup.setOnClickListener {
             startActivity(Intent(this, SignupActivity::class.java))
         }
 
-        // 🔹 Tombol lupa password (Firebase)
         binding.tvForgetPassword.setOnClickListener {
             val input = android.widget.EditText(this)
             input.hint = "Masukkan email kamu"
@@ -162,15 +151,11 @@ class MainActivity : AppCompatActivity() {
                 .show()
         }
 
-        // 🔹 Tombol login Google
         binding.btnGoogle?.setOnClickListener {
             signInWithGoogle()
         }
     }
 
-    // ==================================================
-    //                  LOGIN GOOGLE
-    // ==================================================
     private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)

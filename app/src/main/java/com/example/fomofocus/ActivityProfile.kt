@@ -13,7 +13,7 @@ class ActivityProfile : AppCompatActivity() {
 
     private lateinit var binding: ActivityProfileBinding
     private var isPasswordVisible = false
-    private var isEditing = false   // Mode edit profile
+    private var isEditing = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,35 +25,27 @@ class ActivityProfile : AppCompatActivity() {
         val email = sharedPref.getString("email", "")
         val password = sharedPref.getString("password", "")
 
-        // Cek login
         if (username.isNullOrEmpty()) {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
             return
         }
 
-        // Set data awal ke tampilan
         binding.username.setText(username)
         binding.email.setText(email)
         binding.username3.setText(password)
         binding.textView11.text = username
 
-        // Lock semua input awal
         setEditable(false)
 
-        // HIDE tombol Save awal
         binding.btnSave.alpha = 0f
         binding.btnSave.isEnabled = false
 
-        // Tombol kembali
         binding.btnBack.setOnClickListener {
             startActivity(Intent(this, DashboardActivity::class.java))
             finish()
         }
 
-        // -------------------------------
-        //          POPUP MENU
-        // -------------------------------
         binding.settingsProfile.setOnClickListener {
             val popup = PopupMenu(this, binding.settingsProfile)
             popup.menuInflater.inflate(R.menu.menu_profile, popup.menu)
@@ -61,13 +53,11 @@ class ActivityProfile : AppCompatActivity() {
             popup.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
 
-                    // MASUK MODE EDIT
                     R.id.simpan_profile -> {
                         if (!isEditing) enterEditMode()
                         true
                     }
 
-                    // HAPUS AKUN
                     R.id.hapus_akun -> {
                         sharedPref.edit().clear().apply()
                         startActivity(Intent(this, MainActivity::class.java))
@@ -82,26 +72,30 @@ class ActivityProfile : AppCompatActivity() {
             popup.show()
         }
 
-        // ------------ SIMPAN DATA -------------
         binding.btnSave.setOnClickListener {
             saveProfile(sharedPref)
         }
 
-        // ------------ PASSWORD TOGGLE -------------
         binding.ivShowPassword.setOnClickListener {
-            togglePasswordVisibility()
+            isPasswordVisible = !isPasswordVisible
+
+            if (isPasswordVisible) {
+                binding.username3.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                binding.ivShowPassword.setImageResource(R.drawable.baseline_visibility_24)
+            } else {
+                binding.username3.inputType =
+                    InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                binding.ivShowPassword.setImageResource(R.drawable.round_visibility_off_24)
+            }
+
+            binding.username3.setSelection(binding.username3.text.length)
         }
     }
-
-    // =========================================================
-    //                       FUNGSI
-    // =========================================================
 
     private fun enterEditMode() {
         isEditing = true
         setEditable(true)
 
-        // Tampilkan tombol Save Changes
         binding.btnSave.animate().alpha(1f).setDuration(200)
         binding.btnSave.isEnabled = true
 
@@ -120,7 +114,6 @@ class ActivityProfile : AppCompatActivity() {
             return
         }
 
-        // Simpan ke shared preferences
         sharedPref.edit().apply {
             putString("username", newUser)
             putString("email", newEmail)
@@ -130,10 +123,8 @@ class ActivityProfile : AppCompatActivity() {
 
         binding.textView11.text = newUser
 
-        // Lock kembali setelah save
         setEditable(false)
 
-        // Hide tombol Save Changes lagi
         binding.btnSave.animate().alpha(0f).setDuration(200)
         binding.btnSave.isEnabled = false
 

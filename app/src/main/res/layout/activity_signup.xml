@@ -68,12 +68,6 @@
             android:layout_height="match_parent"
             android:background="@color/white">
 
-            <!-- 🔹 Foto Profil -->
-
-            <!-- 🔹 Tombol Tambah Foto -->
-
-            <!-- 🔹 Input Fields -->
-
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imgProfile"
                 android:layout_width="100dp"
@@ -245,6 +239,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.cardview.widget.CardView>
 
     <ImageView
